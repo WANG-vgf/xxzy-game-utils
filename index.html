@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CW数据表格</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      .page {
+        position: relative;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        max-width: 1000px;
+      }
+      h1 {
+        text-align: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      input {
+        width: 70px;
+        padding: 5px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+      button {
+        padding: 10px 20px;
+        background-color: #4caf50;
+        border-radius: 6px;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
+      button:hover {
+        background-color: #45a049;
+      }
+      #topThreeResult {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <h1>CW数据表格</h1>
+      <table id="cwTable">
+        <thead>
+          <tr>
+            <th>名称</th>
+            <th>当前值</th>
+            <th>需求值</th>
+            <th>比例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 表格内容将通过 JavaScript 填充 -->
+        </tbody>
+      </table>
+      <br />
+      <button onclick="calculateTopThree()">计算前三</button>
+      <div id="topThreeResult"></div>
+    </div>
+
+    <script>
+      const CW_LIST = [
+        { key: 'baixuanhu', name: '白玄虎', current: 319, need: 150, ratio: 0 },
+        { key: 'ganfantu', name: '干饭兔', current: 490, need: 212, ratio: 0 },
+        {
+          key: 'zuixiongmao',
+          name: '醉熊猫',
+          current: 648,
+          need: 288,
+          ratio: 0,
+        },
+        {
+          key: 'baozhulong',
+          name: '宝珠龙',
+          current: 377,
+          need: 190,
+          ratio: 0,
+        },
+        { key: 'yunxianlu', name: '云仙鹿', current: 138, need: 60, ratio: 0 },
+        { key: 'zhuxiaoque', name: '朱小雀', current: 175, need: 80, ratio: 0 },
+        {
+          key: 'lingdanghu',
+          name: '铃铛狐',
+          current: 594,
+          need: 298,
+          ratio: 0,
+        },
+        {
+          key: 'xiaolonggui',
+          name: '小龙龟',
+          current: 319,
+          need: 152,
+          ratio: 0,
+        },
+        { key: 'shenxinghe', name: '神行鹤', current: 138, need: 60, ratio: 0 },
+        { key: 'yuji', name: '鱼姬', current: 54, need: 25, ratio: 0 },
+      ];
+
+      // 根据数据填充表格
+      function fillTable() {
+        const tableBody = document.querySelector('#cwTable tbody');
+        tableBody.innerHTML = '';
+        CW_LIST.forEach((item) => {
+          const row = `
+          <tr>
+            <td>${item.name}</td>
+            <td><input type="number" value="${item.current}" data-key="${item.key}" class="currentInput"></td>
+            <td><input type="number" value="${item.need}" data-key="${item.key}" class="needInput"></td>
+            <td id="ratio-${item.key}">${item.ratio}%</td>
+          </tr>
+        `;
+          tableBody.innerHTML += row;
+        });
+      }
+
+      // 计算比例
+      function calculateRatio() {
+        CW_LIST.forEach((item) => {
+          const currentInput = document.querySelector(
+            `.currentInput[data-key="${item.key}"]`
+          );
+          const needInput = document.querySelector(
+            `.needInput[data-key="${item.key}"]`
+          );
+          item.current = parseInt(currentInput.value);
+          item.need = parseInt(needInput.value);
+          item.ratio = ((item.current / item.need) * 100).toFixed(2); // 计算百分比并保留两位小数
+        });
+      }
+
+      // 更新表格中的比例显示
+      function updateRatioDisplay() {
+        CW_LIST.forEach((item) => {
+          const ratioCell = document.getElementById(`ratio-${item.key}`);
+          ratioCell.textContent = `${item.ratio}%`;
+        });
+      }
+
+      // 计算前三
+      function calculateTopThree() {
+        calculateRatio();
+        updateRatioDisplay();
+        CW_LIST.sort((a, b) => b.ratio - a.ratio);
+        const topThree = CW_LIST.slice(0, 3);
+        const topThreeResult = document.querySelector('#topThreeResult');
+        topThreeResult.innerHTML = '';
+        topThree.forEach((item, index) => {
+          const result = `
+          <p>第${index + 1}名：${item.name}，比例：${item.ratio}%</p>
+        `;
+          topThreeResult.innerHTML += result;
+        });
+      }
+
+      // 初始化表格
+      fillTable();
+    </script>
+  </body>
+</html>
